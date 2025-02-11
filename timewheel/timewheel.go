@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/shenghui0779/yiigo/linklist"
+	"github.com/yiigo/contrib/linklist"
 )
 
 type (

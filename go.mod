@@ -1,4 +1,4 @@
-module github.com/shenghui0779/yiigo
+module github.com/yiigo/contrib
 
 go 1.23.0
 
