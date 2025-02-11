@@ -13,7 +13,7 @@ Go 开发实用库
 go get -u github.com/yiigo/contrib
 ```
 
-## 特点
+## 包含
 
 - xhash - 封装便于使用
 - xcrypto - 封装便于使用(支持 AES & RSA)
