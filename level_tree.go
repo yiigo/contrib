@@ -1,4 +1,4 @@
-package yiigo
+package contrib
 
 // ILevelNode 层级树泛型约束
 type ILevelNode interface {

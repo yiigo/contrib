@@ -1,4 +1,4 @@
-package yiigo
+package contrib
 
 import (
 	"context"
@@ -13,10 +13,10 @@ import (
 
 var (
 	// ErrSQLDataType 不合法的插入或更新数据类型错误
-	ErrSQLDataType = errors.New("invaild data type, expects: struct, *struct, yiigo.X")
+	ErrSQLDataType = errors.New("invaild data type, expects: struct, *struct, contrib.X")
 
 	// ErrSQLBatchDataType 不合法的批量插入数据类型错误
-	ErrSQLBatchDataType = errors.New("invaild data type, expects: []struct, []*struct, []yiigo.X")
+	ErrSQLBatchDataType = errors.New("invaild data type, expects: []struct, []*struct, []contrib.X")
 )
 
 // ------------------------------------ TXBuilder ------------------------------------
@@ -162,11 +162,11 @@ type SQLWrapper interface {
 	One(ctx context.Context, data any) error
 	// All 查询多条数据
 	All(ctx context.Context, data any) error
-	// Insert 插入数据 (数据类型：`struct`, `*struct`, `yiigo.X`)
+	// Insert 插入数据 (数据类型：`struct`, `*struct`, `contrib.X`)
 	Insert(ctx context.Context, data any) (sql.Result, error)
-	// BatchInsert 批量插入数据 (数据类型：`[]struct`, `[]*struct`, `[]yiigo.X`)
+	// BatchInsert 批量插入数据 (数据类型：`[]struct`, `[]*struct`, `[]contrib.X`)
 	BatchInsert(ctx context.Context, data any) (sql.Result, error)
-	// Update 更新数据 (数据类型：`struct`, `*struct`, `yiigo.X`)
+	// Update 更新数据 (数据类型：`struct`, `*struct`, `contrib.X`)
 	Update(ctx context.Context, data any) (sql.Result, error)
 	// Delete 删除数据
 	Delete(ctx context.Context) (sql.Result, error)
@@ -182,7 +182,7 @@ type SQLClause struct {
 	binds   []any
 }
 
-// SQLExpr 生成一个语句表达式，例如：yiigo.SQLExpr("price * ? + ?", 2, 100)
+// SQLExpr 生成一个语句表达式，例如：contrib.SQLExpr("price * ? + ?", 2, 100)
 func SQLExpr(query string, binds ...any) *SQLClause {
 	return &SQLClause{
 		query: query,

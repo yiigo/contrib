@@ -1,4 +1,4 @@
-package yiigo
+package contrib
 
 import "fmt"
 

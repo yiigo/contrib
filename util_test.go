@@ -1,4 +1,4 @@
-package yiigo
+package contrib
 
 import (
 	"context"
@@ -20,11 +20,11 @@ func TestSteps(t *testing.T) {
 }
 
 func TestMarshalNoEscapeHTML(t *testing.T) {
-	data := map[string]string{"url": "https://github.com/shenghui0779/yiigo?id=996&name=yiigo"}
+	data := map[string]string{"url": "https://github.com/yiigo?id=996&name=yiigo"}
 
 	b, err := MarshalNoEscapeHTML(data)
 	assert.Nil(t, err)
-	assert.Equal(t, string(b), `{"url":"https://github.com/shenghui0779/yiigo?id=996&name=yiigo"}`)
+	assert.Equal(t, string(b), `{"url":"https://github.com/yiigo?id=996&name=yiigo"}`)
 }
 
 func TestVersionCompare(t *testing.T) {

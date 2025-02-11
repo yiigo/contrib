@@ -55,7 +55,8 @@ func NewWGS84Parameter() *EllipsoidParameter {
 }
 
 // ZtGeoCoordTransform 经纬度与大地平面直角坐标系间的转换；
-// [翻译自C++代码](https://www.cnblogs.com/xingzhensun/p/11377963.html)
+//
+//	[翻译自C++代码](https://www.cnblogs.com/xingzhensun/p/11377963.html)
 type ZtGeoCoordTransform struct {
 	ep *EllipsoidParameter
 	ml int
@@ -63,7 +64,9 @@ type ZtGeoCoordTransform struct {
 }
 
 // NewZtGeoCoordTransform 返回经纬度与大地平面直角坐标系间的转换器；
-// [示例] zgct := yiigo.NewZtGeoCoordTransform(-360, yiigo.GK)
+//
+//	[示例]
+//	zgct := contrib.NewZtGeoCoordTransform(-360, contrib.GK)
 func NewZtGeoCoordTransform(ml int, pt ProjType) *ZtGeoCoordTransform {
 	return &ZtGeoCoordTransform{
 		ep: NewWGS84Parameter(),

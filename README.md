@@ -66,18 +66,18 @@ builder.Wrap(
 
 builder.Wrap(
     contrib.Table("user"),
-    contrib.Where("name = ? AND age > ?", "shenghui0779", 20),
+    contrib.Where("name = ? AND age > ?", "yiigo", 20),
 ).All(ctx, &records)
 // SELECT * FROM user WHERE (name = ? AND age > ?)
-// [shenghui0779 20]
+// [yiigo 20]
 
 builder.Wrap(
     contrib.Table("user"),
-    contrib.Where("name = ?", "shenghui0779"),
+    contrib.Where("name = ?", "yiigo"),
     contrib.Where("age > ?", 20),
 ).All(ctx, &records)
 // SELECT * FROM user WHERE (name = ?) AND (age > ?)
-// [shenghui0779 20]
+// [yiigo 20]
 
 builder.Wrap(
     contrib.Table("user"),
@@ -207,7 +207,7 @@ type User struct {
 
 builder.Wrap(Table("user")).BatchInsert(ctx, []*User{
     {
-        Name: "shenghui0779",
+        Name: "yiigo",
         Age:  20,
     },
     {
@@ -216,11 +216,11 @@ builder.Wrap(Table("user")).BatchInsert(ctx, []*User{
     },
 })
 // INSERT INTO user (name, age) VALUES (?, ?), (?, ?)
-// [shenghui0779 20 yiigo 29]
+// [yiigo 20 yiigo 29]
 
 builder.Wrap(contrib.Table("user")).BatchInsert(ctx, []contrib.X{
     {
-        "name": "shenghui0779",
+        "name": "yiigo",
         "age":  20,
     },
     {
@@ -229,7 +229,7 @@ builder.Wrap(contrib.Table("user")).BatchInsert(ctx, []contrib.X{
     },
 })
 // INSERT INTO user (name, age) VALUES (?, ?), (?, ?)
-// [shenghui0779 20 yiigo 29]
+// [yiigo 20 yiigo 29]
 ```
 
 ### 👉 Update
