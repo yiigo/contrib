@@ -9,8 +9,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// DistributedMutex 分布式锁
-type DistributedMutex interface {
+// Mutex 分布式锁
+type Mutex interface {
 	// Lock 获取锁
 	Lock(ctx context.Context) (bool, error)
 	// TryLock 尝试获取锁
@@ -19,28 +19,28 @@ type DistributedMutex interface {
 	UnLock(ctx context.Context) error
 }
 
-// distributed 基于「Redis」实现的分布式锁
-type distributed struct {
+// redLock 基于「Redis」实现的分布式锁
+type redLock struct {
 	cli    *redis.Client
 	key    string
 	token  string
 	expire time.Duration
 }
 
-func (d *distributed) Lock(ctx context.Context) (bool, error) {
+func (l *redLock) Lock(ctx context.Context) (bool, error) {
 	select {
 	case <-ctx.Done(): // timeout or canceled
 		return false, ctx.Err()
 	default:
 	}
 
-	if err := d.lock(ctx); err != nil {
+	if err := l.lock(ctx); err != nil {
 		return false, err
 	}
-	return len(d.token) != 0, nil
+	return len(l.token) != 0, nil
 }
 
-func (d *distributed) TryLock(ctx context.Context, attempts int, interval time.Duration) (bool, error) {
+func (l *redLock) TryLock(ctx context.Context, attempts int, interval time.Duration) (bool, error) {
 	for i := 0; i < attempts; i++ {
 		select {
 		case <-ctx.Done(): // timeout or canceled
@@ -49,10 +49,10 @@ func (d *distributed) TryLock(ctx context.Context, attempts int, interval time.D
 		}
 
 		// attempt to acquire lock
-		if err := d.lock(ctx); err != nil {
+		if err := l.lock(ctx); err != nil {
 			return false, err
 		}
-		if len(d.token) != 0 {
+		if len(l.token) != 0 {
 			return true, nil
 		}
 		time.Sleep(interval)
@@ -60,8 +60,8 @@ func (d *distributed) TryLock(ctx context.Context, attempts int, interval time.D
 	return false, nil
 }
 
-func (d *distributed) UnLock(ctx context.Context) error {
-	if len(d.token) == 0 {
+func (l *redLock) UnLock(ctx context.Context) error {
+	if len(l.token) == 0 {
 		return nil
 	}
 
@@ -72,15 +72,15 @@ else
 	return 0
 end
 `
-	return d.cli.Eval(context.WithoutCancel(ctx), script, []string{d.key}, d.token).Err()
+	return l.cli.Eval(context.WithoutCancel(ctx), script, []string{l.key}, l.token).Err()
 }
 
-func (d *distributed) lock(ctx context.Context) error {
+func (l *redLock) lock(ctx context.Context) error {
 	token := uuid.New().String()
-	ok, err := d.cli.SetNX(ctx, d.key, token, d.expire).Result()
+	ok, err := l.cli.SetNX(ctx, l.key, token, l.expire).Result()
 	if err != nil {
 		// 尝试GET一次：避免因redis网络错误导致误加锁
-		v, _err := d.cli.Get(ctx, d.key).Result()
+		v, _err := l.cli.Get(ctx, l.key).Result()
 		if _err != nil {
 			if errors.Is(_err, redis.Nil) {
 				return err
@@ -88,19 +88,19 @@ func (d *distributed) lock(ctx context.Context) error {
 			return _err
 		}
 		if v == token {
-			d.token = token
+			l.token = token
 		}
 		return nil
 	}
 	if ok {
-		d.token = token
+		l.token = token
 	}
 	return nil
 }
 
-// RedisMutex 基于Redis实现的分布式锁实例
-func RedisMutex(cli *redis.Client, key string, ttl time.Duration) DistributedMutex {
-	mutex := &distributed{
+// RedLock 基于Redis实现的分布式锁实例
+func RedLock(cli *redis.Client, key string, ttl time.Duration) Mutex {
+	mutex := &redLock{
 		cli:    cli,
 		key:    key,
 		expire: ttl,
