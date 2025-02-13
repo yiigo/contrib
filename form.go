@@ -69,7 +69,6 @@ func (form formSource) TrySet(value reflect.Value, field reflect.StructField, ta
 
 func MappingByPtr(ptr any, setter setter, tag string) error {
 	_, err := mapping(reflect.ValueOf(ptr), emptyField, setter, tag)
-
 	return err
 }
 

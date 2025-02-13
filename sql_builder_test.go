@@ -199,7 +199,6 @@ func TestToInsert(t *testing.T) {
 		Gender: "M",
 		Age:    29,
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "INSERT INTO user (name, gender, age) VALUES (?, ?, ?)", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29}, args)
@@ -209,7 +208,6 @@ func TestToInsert(t *testing.T) {
 		Gender: "M",
 		Age:    29,
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "INSERT INTO user (name, gender, age) VALUES (?, ?, ?) RETURNING id", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29}, args)
@@ -220,20 +218,19 @@ func TestToInsert(t *testing.T) {
 		Age:    29,
 		Phone:  "13605109425",
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "INSERT INTO user (name, gender, age, phone) VALUES (?, ?, ?, ?)", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29, "13605109425"}, args)
 
 	// map 字段顺序不一定
-	// sql, args, err = warpper(Table("user")).insertSQL(X{
-	// 	"age":    29,
-	// 	"gender": "M",
-	// 	"name":   "yiigo",
-	// })
-	//
-	// assert.Equal(t, "INSERT INTO user (age, gender, name) VALUES (?, ?, ?)", sql)
-	// assert.Equal(t, []any{29, "M", "yiigo"}, args)
+	sql, args, err = warpper(Table("user")).insertSQL(map[string]any{
+		"age":    29,
+		"gender": "M",
+		"name":   "yiigo",
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, "INSERT INTO user (age, gender, name) VALUES (?, ?, ?)", sql)
+	assert.Equal(t, []any{29, "M", "yiigo"}, args)
 }
 
 func TestToBatchInsert(t *testing.T) {
@@ -257,7 +254,6 @@ func TestToBatchInsert(t *testing.T) {
 			Age:    20,
 		},
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "INSERT INTO user (name, gender, age) VALUES (?, ?, ?), (?, ?, ?)", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29, "test", "W", 20}, args)
@@ -276,27 +272,26 @@ func TestToBatchInsert(t *testing.T) {
 			Phone:  "13605105471",
 		},
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "INSERT INTO user (name, gender, age, phone) VALUES (?, ?, ?, ?), (?, ?, ?, ?)", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29, "13605109425", "test", "W", 20, "13605105471"}, args)
 
 	// map 字段顺序不一定
-	// sql, args, err = warpper(Table("user")).batchInsertSQL([]X{
-	// 	{
-	// 		"age":    29,
-	// 		"gender": "M",
-	// 		"name":   "yiigo",
-	// 	},
-	// 	{
-	// 		"age":    20,
-	// 		"gender": "W",
-	// 		"name":   "test",
-	// 	},
-	// })
-	//
-	// assert.Equal(t, "INSERT INTO user (age, gender, name) VALUES (?, ?, ?), (?, ?, ?)", sql)
-	// assert.Equal(t, []any{29, "M", "yiigo", 20, "W", "test"}, args)
+	sql, args, err = warpper(Table("user")).batchInsertSQL([]map[string]any{
+		{
+			"age":    29,
+			"gender": "M",
+			"name":   "yiigo",
+		},
+		{
+			"age":    20,
+			"gender": "W",
+			"name":   "test",
+		},
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, "INSERT INTO user (age, gender, name) VALUES (?, ?, ?), (?, ?, ?)", sql)
+	assert.Equal(t, []any{29, "M", "yiigo", 20, "W", "test"}, args)
 }
 
 func TestToUpdate(t *testing.T) {
@@ -315,7 +310,6 @@ func TestToUpdate(t *testing.T) {
 		Gender: "M",
 		Age:    29,
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "UPDATE user SET name = ?, gender = ?, age = ? WHERE (id = ?)", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29, 1}, args)
@@ -329,23 +323,22 @@ func TestToUpdate(t *testing.T) {
 		Age:    29,
 		Phone:  "13605109425",
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "UPDATE user SET name = ?, gender = ?, age = ?, phone = ? WHERE (id = ?)", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29, "13605109425", 1}, args)
 
 	// map 字段顺序不一定
-	// sql, args, err = warpper(
-	// 	Table("user"),
-	// 	Where("id = ?", 1),
-	// ).updateSQL(X{
-	// 	"age":    29,
-	// 	"gender": "M",
-	// 	"name":   "yiigo",
-	// })
-	//
-	// assert.Equal(t, "UPDATE user SET age = ?, gender = ?, name = ? WHERE id = ?", sql)
-	// assert.Equal(t, []any{29, "M", "yiigo", 1}, args)
+	sql, args, err = warpper(
+		Table("user"),
+		Where("id = ?", 1),
+	).updateSQL(map[string]any{
+		"age":    29,
+		"gender": "M",
+		"name":   "yiigo",
+	})
+	assert.Nil(t, err)
+	assert.Equal(t, "UPDATE user SET age = ?, gender = ?, name = ? WHERE (id = ?)", sql)
+	assert.Equal(t, []any{29, "M", "yiigo", 1}, args)
 
 	sql, args, err = warpper(
 		Table("user"),
@@ -355,7 +348,6 @@ func TestToUpdate(t *testing.T) {
 		Gender: "M",
 		Age:    29,
 	})
-
 	assert.Nil(t, err)
 	assert.Equal(t, "UPDATE user SET name = ?, gender = ?, age = ? WHERE (id IN (?, ?))", sql)
 	assert.Equal(t, []any{"yiigo", "M", 29, 1, 2}, args)
@@ -363,8 +355,7 @@ func TestToUpdate(t *testing.T) {
 	sql, args, err = warpper(
 		Table("product"),
 		Where("id = ?", 1),
-	).updateSQL(X{"price": SQLExpr("price * ? + ?", 2, 100)})
-
+	).updateSQL(map[string]any{"price": SQLExpr("price * ? + ?", 2, 100)})
 	assert.Nil(t, err)
 	assert.Equal(t, "UPDATE product SET price = price * ? + ? WHERE (id = ?)", sql)
 	assert.Equal(t, []any{2, 100, 1}, args)
@@ -375,7 +366,6 @@ func TestToDelete(t *testing.T) {
 		Table("user"),
 		Where("id = ?", 1),
 	).deleteSQL()
-
 	assert.Nil(t, err)
 	assert.Equal(t, "DELETE FROM user WHERE (id = ?)", sql)
 	assert.Equal(t, []any{1}, args)
@@ -384,7 +374,6 @@ func TestToDelete(t *testing.T) {
 		Table("user"),
 		WhereIn("id IN (?)", []int{1, 2}),
 	).deleteSQL()
-
 	assert.Nil(t, err)
 	assert.Equal(t, "DELETE FROM user WHERE (id IN (?, ?))", sql)
 	assert.Equal(t, []any{1, 2}, args)

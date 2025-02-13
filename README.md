@@ -185,7 +185,7 @@ builder.Wrap(Table("user")).Insert(ctx, &User{
 // INSERT INTO user (name, age) VALUES (?, ?)
 // [yiigo 29]
 
-builder.Wrap(contrib.Table("user")).Insert(ctx, contrib.X{
+builder.Wrap(contrib.Table("user")).Insert(ctx, map[string]any{
     "name": "yiigo",
     "age":  29,
 })
@@ -218,7 +218,7 @@ builder.Wrap(Table("user")).BatchInsert(ctx, []*User{
 // INSERT INTO user (name, age) VALUES (?, ?), (?, ?)
 // [yiigo 20 yiigo 29]
 
-builder.Wrap(contrib.Table("user")).BatchInsert(ctx, []contrib.X{
+builder.Wrap(contrib.Table("user")).BatchInsert(ctx, []map[string]any{
     {
         "name": "yiigo",
         "age":  20,
@@ -256,7 +256,7 @@ builder.Wrap(
 builder.Wrap(
     contrib.Table("user"),
     contrib.Where("id = ?", 1),
-).Update(ctx, contrib.X{
+).Update(ctx, map[string]any{
     "name": "yiigo",
     "age":  29,
 })
@@ -266,7 +266,7 @@ builder.Wrap(
 builder.Wrap(
     contrib.Table("product"),
     contrib.Where("id = ?", 1),
-).Update(ctx, contrib.X{
+).Update(ctx, map[string]any{
     "price": contrib.SQLExpr("price * ? + ?", 2, 100),
 })
 // UPDATE product SET price = price * ? + ? WHERE (id = ?)
@@ -296,7 +296,7 @@ builder.Transaction(context.Background(), func(ctx context.Context, tx contrib.T
     _, err := tx.Wrap(
         contrib.Table("address"),
         contrib.Where("user_id = ?", 1),
-    ).Update(ctx, contrib.X{"default": 0})
+    ).Update(ctx, map[string]any{"default": 0})
     if err != nil {
         return err
     }
@@ -304,7 +304,7 @@ builder.Transaction(context.Background(), func(ctx context.Context, tx contrib.T
     _, err = tx.Wrap(
         contrib.Table("address"),
         contrib.Where("id = ?", 1),
-    ).Update(ctx, contrib.X{"default": 1})
+    ).Update(ctx, map[string]any{"default": 1})
 
     return err
 })

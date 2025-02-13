@@ -13,10 +13,10 @@ import (
 
 var (
 	// ErrSQLDataType 不合法的插入或更新数据类型错误
-	ErrSQLDataType = errors.New("invaild data type, expects: struct, *struct, contrib.X")
+	ErrSQLDataType = errors.New("invaild data type, expects: struct, *struct, map[string]any")
 
 	// ErrSQLBatchDataType 不合法的批量插入数据类型错误
-	ErrSQLBatchDataType = errors.New("invaild data type, expects: []struct, []*struct, []contrib.X")
+	ErrSQLBatchDataType = errors.New("invaild data type, expects: []struct, []*struct, []map[string]any")
 )
 
 // ------------------------------------ TXBuilder ------------------------------------
@@ -162,11 +162,11 @@ type SQLWrapper interface {
 	One(ctx context.Context, data any) error
 	// All 查询多条数据
 	All(ctx context.Context, data any) error
-	// Insert 插入数据 (数据类型：`struct`, `*struct`, `contrib.X`)
+	// Insert 插入数据 (数据类型：`struct`, `*struct`, `map[string]any`)
 	Insert(ctx context.Context, data any) (sql.Result, error)
-	// BatchInsert 批量插入数据 (数据类型：`[]struct`, `[]*struct`, `[]contrib.X`)
+	// BatchInsert 批量插入数据 (数据类型：`[]struct`, `[]*struct`, `[]map[string]any`)
 	BatchInsert(ctx context.Context, data any) (sql.Result, error)
-	// Update 更新数据 (数据类型：`struct`, `*struct`, `contrib.X`)
+	// Update 更新数据 (数据类型：`struct`, `*struct`, `map[string]any`)
 	Update(ctx context.Context, data any) (sql.Result, error)
 	// Delete 删除数据
 	Delete(ctx context.Context) (sql.Result, error)
@@ -402,7 +402,7 @@ func (w *sqlWrapper) insertSQL(data any) (sql string, args []any, err error) {
 	v := reflect.Indirect(reflect.ValueOf(data))
 	switch v.Kind() {
 	case reflect.Map:
-		x, ok := data.(X)
+		x, ok := data.(map[string]any)
 		if !ok {
 			err = ErrSQLDataType
 			return
@@ -449,7 +449,7 @@ func (w *sqlWrapper) insertSQL(data any) (sql string, args []any, err error) {
 	return
 }
 
-func (w *sqlWrapper) insertWithMap(data X) (columns []string, args []any) {
+func (w *sqlWrapper) insertWithMap(data map[string]any) (columns []string, args []any) {
 	fieldNum := len(data)
 
 	columns = make([]string, 0, fieldNum)
@@ -508,7 +508,7 @@ func (w *sqlWrapper) batchInsertSQL(data any) (sql string, args []any, err error
 	e := v.Type().Elem()
 	switch e.Kind() {
 	case reflect.Map:
-		x, ok := data.([]X)
+		x, ok := data.([]map[string]any)
 		if !ok {
 			err = ErrSQLBatchDataType
 			return
@@ -565,7 +565,7 @@ func (w *sqlWrapper) batchInsertSQL(data any) (sql string, args []any, err error
 	return
 }
 
-func (w *sqlWrapper) batchInsertWithMap(data []X) (columns []string, args []any) {
+func (w *sqlWrapper) batchInsertWithMap(data []map[string]any) (columns []string, args []any) {
 	dataLen := len(data)
 	fieldNum := len(data[0])
 
@@ -638,7 +638,7 @@ func (w *sqlWrapper) updateSQL(data any) (sql string, args []any, err error) {
 
 	switch v.Kind() {
 	case reflect.Map:
-		x, ok := data.(X)
+		x, ok := data.(map[string]any)
 		if !ok {
 			err = ErrSQLDataType
 			return
@@ -706,7 +706,7 @@ func (w *sqlWrapper) updateSQL(data any) (sql string, args []any, err error) {
 	return
 }
 
-func (w *sqlWrapper) updateWithMap(data X) (columns []string, exprs map[string]string, args []any) {
+func (w *sqlWrapper) updateWithMap(data map[string]any) (columns []string, exprs map[string]string, args []any) {
 	fieldNum := len(data)
 
 	columns = make([]string, 0, fieldNum)
